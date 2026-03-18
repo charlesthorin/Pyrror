@@ -1,26 +1,26 @@
-import cv2
+import cv2 as cv
 import numpy as np
-from mss.linux import MSS as mss
+from mss.linux import MSS
+from mss.screenshot import ScreenShot
 
 
 class Capture:
     def __init__(self) -> None:
-        self.mss = mss()
+        self.mss = MSS()
 
-    def start(self):
+    def screen(self):
         with self.mss as sct:
             monitor = sct.monitors[1]
+            screen = sct.grab(monitor)
+            return np.array(screen)
 
-            while True:
-                screen = sct.grab(monitor)
-                img = np.array(screen)
-                cv2.imshow("Monitor #1", img)
-                if cv2.waitKey(1) == ord("q"):
-                    break
-
-        cv2.destroyAllWindows()
+    def encode(self, screenshot: np.typing.ArrayLike):
+        return cv.imencode(".jpg", screenshot)
 
 
 if __name__ == "__main__":
     capture = Capture()
-    capture.start()
+    img = capture.screen()
+    cv.imshow("test", img)
+    if cv.waitKey(0) == ord("q"):
+        cv.destroyAllWindows()

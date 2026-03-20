@@ -9,10 +9,9 @@ class Capture:
         self.mss = MSS()
 
     def screen(self):
-        with self.mss as sct:
-            monitor = sct.monitors[1]
-            screen = sct.grab(monitor)
-            return np.array(screen)
+        monitor = self.mss.monitors[1]
+        screenshot = self.mss.grab(monitor)
+        return np.array(screenshot)
 
     def encode(self, screenshot: np.typing.ArrayLike):
         return cv.imencode(".jpg", screenshot)

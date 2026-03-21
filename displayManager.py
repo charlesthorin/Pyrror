@@ -2,7 +2,7 @@ import subprocess
 
 
 class VirtualDisplayManager:
-    def __init__(self, output_name="DVI-D-0", primary_output="HDMI-A-0"):
+    def __init__(self, output_name="HDMI-0", primary_output="DP-0"):
         self.output_name = output_name
         self.primary_output = primary_output
         self.mode_name = "1920x1080_dummy"
@@ -39,7 +39,7 @@ class VirtualDisplayManager:
                 "--right-of",
                 self.primary_output,
             ],
-            check=True,
+            capture_output=True,
         )
 
     def stop(self):

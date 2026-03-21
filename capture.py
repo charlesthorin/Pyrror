@@ -8,7 +8,7 @@ class Capture:
         self.mss = MSS()
 
     def screen(self):
-        monitor = self.mss.monitors[1]
+        monitor = self.mss.monitors[2]
         screenshot = self.mss.grab(monitor)
         return np.array(screenshot)
 

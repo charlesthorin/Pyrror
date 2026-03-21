@@ -3,6 +3,7 @@ import sys
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from displayManager import VirtualDisplayManager
 from sharing import Sharing
 
 faulthandler.enable()
@@ -16,6 +17,8 @@ class MyWidget(QtWidgets.QWidget):
         self.screenShareThread = QtCore.QThread()
         self.screenShare.moveToThread(self.screenShareThread)
         self.screenShare.image_received.connect(self.display_image)
+
+        self.dpManager = VirtualDisplayManager("HDMI-0", "DP-0")
 
         self.imageContainer = QtWidgets.QLabel()
         self.streamButton = QtWidgets.QPushButton("Stream")
@@ -43,6 +46,7 @@ class MyWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def stream(self):
+        self.dpManager.start()
         self.screenShareThread.started.connect(self.screenShare.share)
         self.screenShareThread.start()
 
@@ -50,6 +54,10 @@ class MyWidget(QtWidgets.QWidget):
     def mirror(self):
         self.screenShareThread.started.connect(self.screenShare.mirror)
         self.screenShareThread.start()
+
+    def closeEvent(self, event):
+        self.dpManager.stop()
+        super().closeEvent(event)
 
 
 if __name__ == "__main__":

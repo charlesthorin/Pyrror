@@ -1,3 +1,7 @@
+from array import array
+from multiprocessing import Array
+from typing import Sequence
+
 import cv2 as cv
 import numpy as np
 from mss.linux import MSS
@@ -13,8 +17,8 @@ class Capture:
         screenshot = self.mss.grab(monitor)
         return np.array(screenshot)
 
-    def encode(self, screenshot: np.typing.ArrayLike):
-        return cv.imencode(".jpg", screenshot)
+    def encode(self, screenshot, parameters):
+        return cv.imencode(".jpg", screenshot, parameters)
 
 
 if __name__ == "__main__":

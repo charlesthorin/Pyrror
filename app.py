@@ -1,8 +1,6 @@
 import faulthandler
 import sys
 
-import numpy as np
-from numpy.typing import ArrayLike
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from sharing import Sharing
@@ -16,16 +14,12 @@ class MyWidget(QtWidgets.QWidget):
 
         self.screenShare = Sharing()
         self.screenShareThread = QtCore.QThread()
-
         self.screenShare.moveToThread(self.screenShareThread)
         self.screenShare.image_received.connect(self.display_image)
 
-        # QLabel contenat l'image dupliquée
         self.imageContainer = QtWidgets.QLabel()
-
         self.streamButton = QtWidgets.QPushButton("Stream")
         self.streamButton.clicked.connect(self.stream)
-
         self.mirrorButton = QtWidgets.QPushButton("Mirror")
         self.mirrorButton.clicked.connect(self.mirror)
 
@@ -33,7 +27,6 @@ class MyWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.imageContainer)
         self.layout.addWidget(self.streamButton)
         self.layout.addWidget(self.mirrorButton)
-
         self.resize(640, 480)
 
     @QtCore.Slot(bytes)
@@ -59,10 +52,8 @@ class MyWidget(QtWidgets.QWidget):
         self.screenShareThread.start()
 
 
-def start():
-    app = QtWidgets.QApplication([])
-
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
     widget = MyWidget()
     widget.show()
-
     sys.exit(app.exec())

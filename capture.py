@@ -1,11 +1,6 @@
-from array import array
-from multiprocessing import Array
-from typing import Sequence
-
 import cv2 as cv
 import numpy as np
 from mss.linux import MSS
-from mss.screenshot import ScreenShot
 
 
 class Capture:

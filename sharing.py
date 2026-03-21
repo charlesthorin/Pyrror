@@ -1,11 +1,16 @@
 import socket
 from sys import byteorder
 
+from PySide6.QtCore import QObject, Signal
+
 from capture import Capture
 
 
-class Sharing:
+class Sharing(QObject):
+    image_received = Signal(bytes)
+
     def __init__(self) -> None:
+        super().__init__()
         self.port = 12345
         self.capture = Capture()
 
@@ -47,11 +52,12 @@ class Sharing:
                         return
                     buf += data
                     recvd = len(buf)
+                self.image_received.emit(buf)
 
 
 if __name__ == "__main__":
     screenShare = Sharing()
-    match input("Select mode:\n-[S]hare\n[M]irror").lower():
+    match input("Select mode:\n-[S]hare\n-[M]irror").lower():
         case "s":
             screenShare.share()
         case "m":

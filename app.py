@@ -5,7 +5,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from PySide6 import QtCore, QtGui, QtWidgets
 
-from capture import Capture
+from sharing import Sharing
 
 faulthandler.enable()
 
@@ -14,27 +14,32 @@ class MyWidget(QtWidgets.QWidget):
     def __init__(self) -> None:
         super().__init__()
 
-        self.capture: Capture = Capture()
+        self.screenShare = Sharing()
+        self.screenShareThread = QtCore.QThread()
+
+        self.screenShare.moveToThread(self.screenShareThread)
+        self.screenShare.image_received.connect(self.display_image)
 
         # QLabel contenat l'image dupliquée
         self.imageContainer = QtWidgets.QLabel()
 
-        # QTimer appelant la capture à interval régulier
-        self.timer = QtCore.QTimer()
-        self.timer.setInterval(1000 / 30)
-        self.timer.timeout.connect(self.stream)
+        self.streamButton = QtWidgets.QPushButton("Stream")
+        self.streamButton.clicked.connect(self.stream)
 
-        self.button = QtWidgets.QPushButton("Stream")
-        self.button.clicked.connect(self.timer.start)
+        self.mirrorButton = QtWidgets.QPushButton("Mirror")
+        self.mirrorButton.clicked.connect(self.mirror)
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.imageContainer)
-        self.layout.addWidget(self.button)
+        self.layout.addWidget(self.streamButton)
+        self.layout.addWidget(self.mirrorButton)
 
         self.resize(640, 480)
 
-    @QtCore.Slot()
-    def display_image(self, pixmap: QtGui.QPixmap):
+    @QtCore.Slot(bytes)
+    def display_image(self, imgData: bytes):
+        pixmap = QtGui.QPixmap()
+        pixmap.loadFromData(imgData)
         self.imageContainer.setPixmap(
             pixmap.scaled(
                 self.imageContainer.size(),
@@ -44,14 +49,12 @@ class MyWidget(QtWidgets.QWidget):
         )
 
     @QtCore.Slot()
-    def stream(self) -> ArrayLike:
-        screenshot = self.capture.screen()
-        success, imgData = self.capture.encode(screenshot)
-        imgData = imgData.tobytes()
-        if success:
-            pixmap = QtGui.QPixmap()
-            pixmap.loadFromData(imgData)
-            self.display_image(pixmap)
+    def stream(self):
+        self.screenShareThread.started.connect(self.screenShare.share)
+
+    @QtCore.Slot()
+    def mirror(self):
+        self.screenShareThread.started.connect(self.screenShare.mirror)
 
 
 def start():

@@ -1,6 +1,7 @@
 import socket
 from sys import byteorder
 
+from PySide6 import QtCore
 from PySide6.QtCore import QObject, Signal
 
 from capture import Capture
@@ -14,7 +15,9 @@ class Sharing(QObject):
         self.port = 12345
         self.capture = Capture()
 
+    @QtCore.Slot()
     def share(self):
+        print("sharing")
         with socket.socket() as s:
             s.bind(("", self.port))
             s.listen()
@@ -28,7 +31,9 @@ class Sharing(QObject):
 
                     con.sendall(img[1].tobytes())
 
+    @QtCore.Slot()
     def mirror(self):
+        print("mirroring")
         with socket.socket() as s:
             s.connect(("192.168.1.68", self.port))
             while True:

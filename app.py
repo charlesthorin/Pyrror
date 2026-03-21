@@ -51,10 +51,12 @@ class MyWidget(QtWidgets.QWidget):
     @QtCore.Slot()
     def stream(self):
         self.screenShareThread.started.connect(self.screenShare.share)
+        self.screenShareThread.start()
 
     @QtCore.Slot()
     def mirror(self):
         self.screenShareThread.started.connect(self.screenShare.mirror)
+        self.screenShareThread.start()
 
 
 def start():
